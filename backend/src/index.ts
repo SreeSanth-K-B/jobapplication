@@ -48,20 +48,15 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ message: 'Internal server error', error: err.message });
 });
 
-// Start server
-const startServer = async () => {
-  try {
-    await connectMongoDB();
-    console.log('All databases connected');
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+// Start server — listen first, then connect DB
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  connectMongoDB()
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch((err) => {
+      console.error('MongoDB connection failed:', err.message);
+      // Don't exit — let Railway healthcheck pass, DB will retry
     });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
-
-startServer();
+});
 
 export default app;
