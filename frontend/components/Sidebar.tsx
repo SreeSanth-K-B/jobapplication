@@ -53,8 +53,8 @@ export default function Sidebar({ unreadCount = 0, onNotificationsClick }: Sideb
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">AT</div>
-          <span className="sidebar-logo-text">ApplyTrack</span>
+          <div className="sidebar-logo-icon">HH</div>
+          <span className="sidebar-logo-text">HireHunt</span>
         </div>
         <button
           className="sidebar-toggle"
