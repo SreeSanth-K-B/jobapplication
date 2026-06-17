@@ -17,12 +17,13 @@ const getOAuthClient = () => {
 };
 
 // GET /api/gmail/auth-url — get Gmail OAuth URL
-router.get('/auth-url', authenticate, (_req: AuthRequest, res: Response): void => {
+router.get('/auth-url', authenticate, (req: AuthRequest, res: Response): void => {
   const oauth2Client = getOAuthClient();
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: ['https://www.googleapis.com/auth/gmail.readonly'],
+    state: req.userId, // pass userId so callback knows who to update
   });
   res.json({ url });
 });
