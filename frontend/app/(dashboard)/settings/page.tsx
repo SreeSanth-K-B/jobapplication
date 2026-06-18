@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 
 export default function SettingsPage() {
@@ -15,6 +16,20 @@ export default function SettingsPage() {
   const [gmailLoading, setGmailLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState('');
+  const [gmailStatus, setGmailStatus] = useState('');
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const gmail = searchParams.get('gmail');
+    if (gmail === 'connected') {
+      setGmailStatus('Gmail connected successfully!');
+      // Reload the page to refresh user state from server
+      window.location.replace('/settings');
+    } else if (gmail === 'error') {
+      const reason = searchParams.get('reason');
+      setGmailStatus(reason === 'no_refresh_token' ? 'Error: Please revoke access at myaccount.google.com/permissions and try again.' : 'Failed to connect Gmail. Please try again.');
+    }
+  }, [searchParams]);
 
   const saveProfile = async () => {
     setSaving(true);
@@ -28,8 +43,8 @@ export default function SettingsPage() {
     setGmailLoading(true);
     const res = await api.get('/api/gmail/auth-url');
     const data = await res.json();
-    window.open(data.url, '_blank');
-    setGmailLoading(false);
+    // Open in same tab so the callback redirect works correctly
+    window.location.href = data.url;
   };
 
   const syncGmail = async () => {
@@ -138,6 +153,11 @@ export default function SettingsPage() {
             {syncResult && (
               <div style={{ padding: '10px 14px', background: 'var(--accent-light)', borderRadius: '8px', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                 {syncResult}
+              </div>
+            )}
+            {gmailStatus && (
+              <div style={{ padding: '10px 14px', background: 'var(--accent-light)', borderRadius: '8px', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                {gmailStatus}
               </div>
             )}
           </div>
