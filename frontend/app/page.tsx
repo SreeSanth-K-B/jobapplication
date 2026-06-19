@@ -14,9 +14,7 @@ export default function HomePage() {
         <h1 style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', maxWidth: '600px' }}>
           Track every application.<br />Win the job.
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '480px', lineHeight: 1.7, marginBottom: '36px' }}>
-          HireHunt combines a Kanban board, AI coaching, and Gmail sync into one powerful job search engine — built for serious candidates.
-        </p>
+        
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link href="/signup" className="btn btn-primary btn-lg" id="home-signup-btn">Get Started Free</Link>
           <Link href="/login" className="btn btn-secondary btn-lg" id="home-login-btn">Sign In</Link>
