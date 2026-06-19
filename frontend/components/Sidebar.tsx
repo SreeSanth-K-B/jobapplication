@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import HireHuntLogo from './HireHuntLogo';
 
@@ -43,6 +43,8 @@ interface SidebarProps {
 
 export default function Sidebar({ unreadCount = 0, onNotificationsClick }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
@@ -50,66 +52,132 @@ export default function Sidebar({ unreadCount = 0, onNotificationsClick }: Sideb
     ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
+  // Apply dark/light mode to root
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.setAttribute('data-theme', 'dark');
+    } else {
+      root.setAttribute('data-theme', 'light');
+    }
+  }, [darkMode]);
+
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <HireHuntLogo showText={!collapsed} size={32} variant="light" />
-        </div>
-        <button
-          className="sidebar-toggle"
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          id="sidebar-toggle-btn"
-        >
-          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-        </button>
-      </div>
-
-      <nav className="sidebar-nav">
-        {navItems.map(section => (
-          <div key={section.section}>
-            <div className="sidebar-section-label">{section.section}</div>
-            {section.items.map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`nav-item ${pathname === item.href || pathname.startsWith(item.href + '/') ? 'active' : ''}`}
-                id={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
+    <>
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+        }}>
+          <div style={{
+            background: 'var(--bg-secondary)', border: '1px solid var(--border-color)',
+            borderRadius: '12px', padding: '28px', width: '320px', textAlign: 'center',
+          }}>
+            <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+              Log out?
+            </div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+              You'll need to sign in again to access your account.
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowLogoutConfirm(false)}
+                id="cancel-logout-btn"
               >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        ))}
-
-        {/* Notifications */}
-        <div className="sidebar-section-label">Alerts</div>
-        <button
-          className="nav-item"
-          style={{ width: '100%', textAlign: 'left' }}
-          onClick={onNotificationsClick}
-          id="nav-notifications"
-        >
-          <span className="nav-icon"><BellIcon /></span>
-          <span className="nav-label">Notifications</span>
-          {unreadCount > 0 && (
-            <span className="nav-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
-          )}
-        </button>
-      </nav>
-
-      <div className="sidebar-footer">
-        <div className="sidebar-user" onClick={logout} id="sidebar-logout-btn" title="Click to logout">
-          <div className="user-avatar">{initials}</div>
-          <div className="user-info">
-            <div className="user-name">{user?.name || 'User'}</div>
-            <div className="user-email">{user?.email || ''}</div>
+                Cancel
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => { setShowLogoutConfirm(false); logout(); }}
+                id="confirm-logout-btn"
+              >
+                Log Out
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      )}
+
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <HireHuntLogo showText={!collapsed} size={32} variant="light" />
+          </div>
+          {/* Toggle button — always visible, moves into icon-only slot when collapsed */}
+          <button
+            className="sidebar-toggle"
+            onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            id="sidebar-toggle-btn"
+            style={collapsed ? { margin: '0 auto' } : {}}
+          >
+            {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map(section => (
+            <div key={section.section}>
+              <div className="sidebar-section-label">{section.section}</div>
+              {section.items.map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-item ${pathname === item.href || pathname.startsWith(item.href + '/') ? 'active' : ''}`}
+                  id={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          ))}
+
+          {/* Notifications */}
+          <div className="sidebar-section-label">Alerts</div>
+          <button
+            className="nav-item"
+            style={{ width: '100%', textAlign: 'left' }}
+            onClick={onNotificationsClick}
+            id="nav-notifications"
+          >
+            <span className="nav-icon"><BellIcon /></span>
+            <span className="nav-label">Notifications</span>
+            {unreadCount > 0 && (
+              <span className="nav-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+            )}
+          </button>
+
+          {/* Dark / Light mode toggle */}
+          <button
+            className="nav-item"
+            style={{ width: '100%', textAlign: 'left' }}
+            onClick={() => setDarkMode(!darkMode)}
+            id="nav-theme-toggle"
+          >
+            <span className="nav-icon">{darkMode ? <SunIcon /> : <MoonIcon />}</span>
+            <span className="nav-label">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div
+            className="sidebar-user"
+            onClick={() => setShowLogoutConfirm(true)}
+            id="sidebar-logout-btn"
+            title="Click to logout"
+          >
+            <div className="user-avatar">{initials}</div>
+            <div className="user-info">
+              <div className="user-name">{user?.name || 'User'}</div>
+              <div className="user-email">{user?.email || ''}</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }
 
@@ -185,6 +253,26 @@ function BellIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
       <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </svg>
   );
 }

@@ -69,6 +69,36 @@
   --transition-slow: 350ms ease;
 }
 
+/* ===== LIGHT MODE ===== */
+[data-theme='light'] {
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #EBEBEB;
+  --bg-hover: #E0E0E0;
+  --border-color: #D4D4D4;
+  --border-hover: #BDBDBD;
+  --accent: #000000;
+  --accent-hover: #1A1A1A;
+  --accent-light: rgba(0, 0, 0, 0.06);
+  --accent-glow: rgba(0, 0, 0, 0.1);
+  --text-primary: #111111;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --danger: #C62828;
+  --info: #555555;
+  --stage-wishlist: #555555;
+  --stage-applied: #1565C0;
+  --stage-screening: #6A1B9A;
+  --stage-interview: #E65100;
+  --stage-offer: #2E7D32;
+  --stage-rejected: #C62828;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 /* ===== RESET & BASE ===== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -181,6 +211,12 @@ p { color: var(--text-secondary); }
   align-items: center;
   justify-content: space-between;
   min-height: 64px;
+  transition: padding var(--transition-slow);
+}
+
+.sidebar.collapsed .sidebar-header {
+  padding: var(--space-4) var(--space-2);
+  justify-content: center;
 }
 
 .sidebar-logo {
@@ -616,7 +652,7 @@ p { color: var(--text-secondary); }
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: 3px;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: capitalize;
