@@ -3,7 +3,6 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'HireHunt — AI-Powered Job Application Tracker',
-  description: 'Track your job applications, get AI coaching, and sync with Gmail. Built for modern job seekers.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
