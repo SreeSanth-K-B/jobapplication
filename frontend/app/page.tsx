@@ -2,13 +2,14 @@
 
 import { AuthProvider } from '@/lib/auth-context';
 import Link from 'next/link';
+import HireHuntLogo from '@/components/HireHuntLogo';
 
 export default function HomePage() {
   return (
     <AuthProvider>
       <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
-        <div style={{ width: '52px', height: '52px', background: 'var(--accent)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', fontWeight: 700, fontSize: '22px', color: 'white' }}>
-          HH
+        <div style={{ marginBottom: '28px', display: 'flex', justifyContent: 'center' }}>
+          <HireHuntLogo showText={true} size={44} variant="light" />
         </div>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', maxWidth: '600px' }}>
           Track every application.<br />Win the job.
