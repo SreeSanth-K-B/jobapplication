@@ -20,7 +20,7 @@
     "mongoose": "^8.4.1",
     "mysql2": "^3.10.1",
     "sequelize": "^6.37.3",
-    "@google/generative-ai": "^0.15.0",
+    "@google/generative-ai": "^0.21.0",
     "node-cron": "^3.0.3",
     "uuid": "^10.0.0"
   },
